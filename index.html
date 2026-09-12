@@ -61,8 +61,17 @@
 <a href="#gallery">Gallery</a>
 <a href="#faq">FAQs</a>
 </nav>
-<button class="music-control" id="musicControl" aria-label="Play wedding music">♫</button>
-<audio id="weddingMusic" loop preload="none"></audio>
+<button
+  class="music-control"
+  id="musicControl"
+  type="button"
+  aria-label="Play wedding music">
+  ♫
+</button>
+
+<audio id="weddingMusic" loop preload="none">
+  <source src="music/1.mp3" type="audio/mpeg">
+</audio>
 </header>
 
 <main>
@@ -187,7 +196,7 @@
 <span class="event-number">02</span>
 <span class="event-label">Friday • 20 November</span>
 <h3>Joint Satsang</h3>
-<time>3:00 PM</time>
+<time>05:00 PM</time>
 <p>A peaceful gathering surrounded by flowers, light and devotion.</p>
 </div>
 </article>
@@ -216,7 +225,7 @@
 <span class="event-number">04</span>
 <span class="event-label">Sunday • 22 November</span>
 <h3>Marriage</h3>
-<time>22 November 2026</time>
+<time>Morning After 12:00 AM</time>
 <p>A sacred beginning beneath flowers, light and timeless blessings.</p>
 </div>
 </article>
@@ -228,9 +237,9 @@
 </div>
 <div class="event-info">
 <span class="event-number">05</span>
-<span class="event-label">Celebration</span>
-<h3>Reception</h3>
-<time>Details to be announced</time>
+<span class="event-label">22 November 2026</span>
+<h3>Vows Ceremony</h3>
+<time>Sunday • 12:00 PM</time>
 <p>An elegant evening of togetherness and celebration.</p>
 </div>
 </article>
@@ -291,9 +300,9 @@
 <span class="gallery-caption">A Beautiful Beginning</span>
 </button>
 
-<button class="gallery-item reveal" type="button" data-title="Together">
+<button class="gallery-item reveal" type="button" data-title="Bride">
 <img src="img\sumiranshabda\4.jpeg" alt="Sumiran and Shabda" loading="lazy">
-<span class="gallery-caption">Together</span>
+<span class="gallery-caption">Bride</span>
 </button>
 
 <button class="gallery-item gallery-wide reveal" type="button" data-title="Moments">
@@ -317,60 +326,107 @@
 <button class="lightbox-close" id="lightboxClose" aria-label="Close gallery">×</button>
 <button class="lightbox-prev" id="lightboxPrev" aria-label="Previous image">‹</button>
 <div class="lightbox-content">
-<div id="lightboxArtwork"></div>
+<div class="lightbox-image-wrap">
+<img id="lightboxImage" src="" alt="">
+<div class="lightbox-loader" id="lightboxLoader"></div>
+</div>
 <p id="lightboxTitle"></p>
 </div>
 <button class="lightbox-next" id="lightboxNext" aria-label="Next image">›</button>
 </div>
 
 <section class="rsvp section paper-section" id="rsvp">
-<div class="rsvp-card reveal">
-<div class="section-heading">
+<div class="rsvp-shell reveal">
+<div class="rsvp-ornament rsvp-ornament-left">❦</div>
+<div class="rsvp-ornament rsvp-ornament-right">❦</div>
+<div class="rsvp-intro">
 <span class="eyebrow">Kindly Respond</span>
 <h2>Will You Join Us?</h2>
-<p>Your presence would make our celebration even more special.</p>
+<div class="rsvp-divider"><span></span><i>♡</i><span></span></div>
+<p>Your presence, blessings and warm wishes would make Sumiran &amp; Shabda's celebration even more special.</p>
 </div>
-<form id="rsvpForm" novalidate>
-<div class="form-grid">
-<div class="field">
+<form id="rsvpForm" class="rsvp-form" novalidate>
+<div class="rsvp-step">
+<span class="step-number">01</span>
+<div><span class="step-label">A little about you</span><h3>Guest Details</h3></div>
+</div>
+<div class="rsvp-grid">
+<div class="rsvp-field">
+<input type="text" id="guestName" name="guestName" autocomplete="name" placeholder=" " required>
 <label for="guestName">Guest Name</label>
-<input type="text" id="guestName" name="guestName" autocomplete="name" required>
+<span class="field-line"></span>
 <small class="error-message"></small>
 </div>
-<div class="field">
+<div class="rsvp-field">
+<input type="tel" id="phone" name="phone" autocomplete="tel" placeholder=" " required>
 <label for="phone">Phone Number</label>
-<input type="tel" id="phone" name="phone" autocomplete="tel" required>
+<span class="field-line"></span>
 <small class="error-message"></small>
 </div>
-<div class="field">
-<label for="guestCount">Number of Guests</label>
+</div>
+<div class="rsvp-step rsvp-step-space">
+<span class="step-number">02</span>
+<div><span class="step-label">Your celebration plans</span><h3>Tell Us About Your Visit</h3></div>
+</div>
+<div class="rsvp-grid">
+<div class="rsvp-field select-field">
 <select id="guestCount" name="guestCount" required>
-<option value="">Select</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+<option value="" selected disabled>Select number</option>
+<option value="1">Just me</option>
+<option value="2">2 guests</option>
+<option value="3">3 guests</option>
+<option value="4">4 guests</option>
+<option value="5">5 guests</option>
 </select>
+<label for="guestCount">Number of Guests</label>
+<span class="field-line"></span>
 <small class="error-message"></small>
 </div>
-<div class="field">
-<label for="attendance">Attendance</label>
+<div class="rsvp-field select-field">
 <select id="attendance" name="attendance" required>
-<option value="">Select</option><option value="yes">Joyfully attending</option><option value="no">Unable to attend</option>
+<option value="" selected disabled>Select response</option>
+<option value="yes">Joyfully attending ♡</option>
+<option value="no">Unable to attend</option>
 </select>
+<label for="attendance">Attendance</label>
+<span class="field-line"></span>
 <small class="error-message"></small>
 </div>
-<div class="field">
-<label for="meal">Meal Preference</label>
+<div class="rsvp-field select-field">
 <select id="meal" name="meal" required>
-<option value="">Select</option><option value="vegetarian">Vegetarian</option><option value="other">Other</option>
+<option value="" selected disabled>Select preference</option>
+<option value="vegetarian">Vegetarian</option>
+<option value="other">Other</option>
 </select>
+<label for="meal">Meal Preference</label>
+<span class="field-line"></span>
 <small class="error-message"></small>
 </div>
-<div class="field full">
-<label for="message">Message</label>
-<textarea id="message" name="message" rows="4" placeholder="Leave a little note for Sumiran & Shabda..."></textarea>
 </div>
+<div class="rsvp-step rsvp-step-space">
+<span class="step-number">03</span>
+<div><span class="step-label">A note from the heart</span><h3>Leave Us A Message</h3></div>
 </div>
-<button class="btn btn-primary form-submit" type="submit">Send RSVP ♡</button>
+<div class="rsvp-field textarea-field">
+<textarea id="message" name="message" rows="4" maxlength="300" placeholder="Write something lovely for Sumiran &amp; Shabda..."></textarea>
+<span class="field-line"></span>
+<div class="textarea-meta"><small>Optional</small><small id="rsvpCharCount">0 / 300</small></div>
+</div>
+<div class="rsvp-submit-area">
+<button class="rsvp-submit" type="submit"><span>Send RSVP</span><strong>♡</strong></button>
+<p class="rsvp-privacy"><span>✦</span>Your response stays within this invitation.</p>
+</div>
+<div class="rsvp-success" id="rsvpSuccess" aria-hidden="true">
+<div class="success-flower">❦</div>
+<div class="success-heart">♡</div>
+<span>Response Received</span>
+<h3>Thank You</h3>
+<p>We are so grateful to know that you are part of this beautiful celebration.</p>
+<strong>Sumiran &amp; Shabda</strong>
+</div>
 <div class="form-status" id="formStatus" role="status"></div>
 </form>
+<div class="rsvp-bottom-note"><span></span><p>With love, Sumiran &amp; Shabda</p><span></span></div>
 </div>
 </section>
 
@@ -529,38 +585,94 @@
 <div class="section-heading reveal">
 <span class="eyebrow">Good To Know</span>
 <h2>Frequently Asked Questions</h2>
+<p>A few answers before you arrive, because every great celebration needs a little planning.</p>
 </div>
 <div class="faq-list">
-<details class="faq-item reveal"><summary>How do I RSVP?</summary><p>Please use the RSVP form on this invitation. This is a frontend-only invitation form and does not send information to a server.</p></details>
-<details class="faq-item reveal"><summary>Where will the celebrations take place?</summary><p>The listed location is Dayalbagh, Agra, PIN 282005, Uttar Pradesh, India. A precise venue address has not been provided.</p></details>
-<details class="faq-item reveal"><summary>What time is Mehndi & Sangeet?</summary><p>Time to be confirmed.</p></details>
-<details class="faq-item reveal"><summary>What is the dress code?</summary><p>No official dress code has been provided. Festive Indian attire is suggested as a recommendation.</p></details>
-<details class="faq-item reveal"><summary>Will accommodation be provided?</summary><p>Accommodation details will be shared soon.</p></details>
-<details class="faq-item reveal"><summary>Can I bring additional guests?</summary><p>Please indicate the number of guests attending in the RSVP form. Further details will be updated soon.</p></details>
-<details class="faq-item reveal"><summary>Will photography information be shared?</summary><p>Photography details will be updated soon.</p></details>
-<details class="faq-item reveal"><summary>Who should I contact with questions?</summary><p>Contact information has not been provided yet.</p></details>
+<details class="faq-item reveal">
+<summary>How do I RSVP?</summary>
+<p>Simply fill out the RSVP form on this invitation. It is frontend-only, so your response enjoys the celebration here but does not travel to a server. ♡</p>
+</details>
+<details class="faq-item reveal">
+<summary>Where is the wedding?</summary>
+<p>The celebration is in <strong>Dayalbagh, Agra, PIN 282005, Uttar Pradesh, India</strong>. A precise venue address has not been provided yet, so our map is doing its best with what we know! 📍</p>
+</details>
+<details class="faq-item reveal">
+<summary>When should I arrive?</summary>
+<p>The confirmed timings are <strong>11:00 AM for Haldi</strong> and <strong>3:00 PM for Joint Satsang</strong> on Friday, 20 November. For other events, timings will be shared once confirmed. No guessing games required. 😄</p>
+</details>
+<details class="faq-item reveal">
+<summary>What should I wear?</summary>
+<p>No official dress code has been announced. We suggest <strong>festive Indian attire</strong>—something comfortable enough to celebrate in and elegant enough for all those photographs! 📸</p>
+</details>
+<details class="faq-item reveal">
+<summary>Will accommodation and travel details be available?</summary>
+<p>Yes, we know this is important. <strong>Accommodation details will be shared soon</strong>, and travel information will be updated soon. Until then, please keep your travel-planning hat nearby. 😉</p>
+</details>
+<details class="faq-item reveal">
+<summary>What if I have more questions?</summary>
+<p>That is completely fine. Some details are still being finalised, so if something is not listed here, it simply means <strong>details will be updated soon</strong>. Even wedding planners need a little time! 😄</p>
+</details>
+<details class="faq-item reveal">
+<summary>Who is behind this beautiful invitation?</summary>
+<p><strong>Dwi Aman</strong> helped bring this digital invitation to life. The wedding itself, however, is definitely the work of <strong>Sumiran &amp; Shabda</strong>. Dwi Aman is not taking credit for the romance! 😉</p>
+</details>
+<details class="faq-item reveal">
+<summary>Can Dwi Aman take credit for the wedding too?</summary>
+<p>Nice try! 😄 <strong>Dwi Aman</strong> can help bring meaningful connections together, but the love story belongs entirely to <strong>Sumiran &amp; Shabda</strong>. ♡</p>
+</details>
 </div>
 </section>
 
-<section class="guestbook section">
-<div class="section-heading reveal">
+<section class="guestbook section" id="guestbook">
+<div class="guestbook-wrap">
+<div class="guestbook-heading reveal">
 <span class="eyebrow">Leave A Little Love</span>
 <h2>Guestbook</h2>
-<p>Leave a message for Sumiran & Shabda. Entries are stored locally in this browser and are not submitted to a server.</p>
+<p>Leave a message for Sumiran &amp; Shabda. Your words will become a little part of their celebration.</p>
 </div>
 <div class="guestbook-layout">
-<form id="guestbookForm" class="guestbook-form reveal">
-<div class="field">
+<div class="guestbook-form-card reveal">
+<div class="guestbook-card-top">
+<span class="guestbook-mini-icon">♡</span>
+<div><span>From The Heart</span><h3>Write A Note</h3></div>
+</div>
+<form id="guestbookForm">
+<div class="guestbook-field">
 <label for="guestbookName">Your Name</label>
-<input type="text" id="guestbookName" required>
+<input type="text" id="guestbookName" name="guestbookName" placeholder="Enter your name" maxlength="60" required>
 </div>
-<div class="field">
+<div class="guestbook-field">
 <label for="guestbookMessage">Your Message</label>
-<textarea id="guestbookMessage" rows="5" required></textarea>
+<textarea id="guestbookMessage" name="guestbookMessage" rows="5" maxlength="300" placeholder="Write a blessing, wish or sweet note..."></textarea>
+<div class="guestbook-counter" id="guestbookCounter">0 / 300</div>
 </div>
-<button type="submit" class="btn btn-primary">Leave Your Note ♡</button>
+<button class="guestbook-submit" type="submit"><span>Leave Your Note</span><strong>♡</strong></button>
 </form>
-<div class="guestbook-notes reveal" id="guestbookNotes"></div>
+<div class="guestbook-success" id="guestbookSuccess" aria-hidden="true">
+<div>♡</div>
+<h3>Thank You</h3>
+<p>Your beautiful words have been added to the guestbook.</p>
+</div>
+</div>
+<div class="guestbook-note-card reveal">
+<div class="note-decoration">❦</div>
+<div class="note-heart">♡</div>
+<p class="note-quote">“</p>
+<blockquote>Your beautiful message could be the first note here.</blockquote>
+<p class="note-quote note-end">”</p>
+<span>With love, Sumiran &amp; Shabda</span>
+<div class="note-flower">✿</div>
+</div>
+</div>
+<div class="guestbook-wall reveal">
+<div class="guestbook-wall-title">
+<span class="eyebrow">Words To Remember</span>
+<h3>Notes From Our Loved Ones</h3>
+</div>
+<div class="guestbook-list" id="guestbookList"></div>
+<p class="guestbook-empty" id="guestbookEmpty">Your message could be the first beautiful note. ♡</p>
+</div>
+<p class="guestbook-local-note">Messages are saved locally in this browser and are not submitted to a server.</p>
 </div>
 </section>
 
@@ -576,6 +688,28 @@
 <span class="thank-you-date">22 November 2026</span>
 </div>
 </section>
+
+<!-- DWI AMAN FOOTER -->
+<section class="dwi-aman-footer">
+  <div class="dwi-aman-inner">
+    <div class="dwi-aman-logo">
+      <img src="img\dwiaman.png" alt="Dwi Aman">
+    </div>
+    <div class="dwi-aman-content">
+      <span class="dwi-aman-label">Made Possible By</span>
+      <h2>Dwi Aman</h2>
+      <p>Marriage Panchayat</p>
+      <div class="dwi-aman-tagline">“संस्कारों से जुड़े संबंध”</div>
+      <p class="dwi-aman-message">Celebrating meaningful relationships, timeless traditions and beautiful beginnings.</p>
+      <a href="#dwiaman" class="dwi-aman-btn">Discover Dwi Aman</a>
+    </div>
+    <div class="dwi-aman-visual">
+      <div class="dwi-aman-orbit"></div>
+      <span>♡</span>
+    </div>
+  </div>
+</section>
+
 </main>
 </div>
 

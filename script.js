@@ -199,31 +199,96 @@ new Navigation();
 /* MUSIC */
 class MusicController{
   constructor(){
-    if(!DOM.musicBtn)return;
-    DOM.musicBtn.addEventListener("click",()=>this.toggle());
-    DOM.music?.addEventListener("play",()=>this.icon(true));
-    DOM.music?.addEventListener("pause",()=>this.icon(false));
+    this.music=DOM.music;
+    this.button=DOM.musicBtn;
+    this.started=false;
+
+    if(!this.music)return;
+
+    this.music.volume=0.3;
+
+    if(this.button){
+      this.button.addEventListener("click",()=>this.toggle());
+    }
+
+    this.music.addEventListener("play",()=>this.icon(true));
+    this.music.addEventListener("pause",()=>this.icon(false));
+    this.music.addEventListener("ended",()=>this.icon(false));
+    this.music.addEventListener("error",()=>this.handleError());
+
+    /* Start music on first user touch/click */
+    this.firstInteraction=()=>this.startMusic();
+
+    document.addEventListener("touchstart",this.firstInteraction,{
+      once:true,
+      passive:true
+    });
+
+    document.addEventListener("click",this.firstInteraction,{
+      once:true
+    });
+
+    this.icon(false);
+  }
+
+  async startMusic(){
+    if(!this.music||this.started)return;
+
+    try{
+      if(this.music.readyState===0){
+        this.music.load();
+      }
+
+      this.music.volume=0.3;
+      await this.music.play();
+
+      this.started=true;
+
+    }catch(error){
+      console.warn("Wedding music could not start:",error);
+    }
   }
 
   async toggle(){
-    if(!DOM.music?.src){
-      showToast("Add your wedding music file to enable music.");
-      return;
-    }
+    if(!this.music)return;
+
     try{
-      if(DOM.music.paused)await DOM.music.play();
-      else DOM.music.pause();
-    }catch{
-      showToast("Music could not be played.");
+      if(this.music.paused){
+        if(this.music.readyState===0){
+          this.music.load();
+        }
+
+        this.music.volume=0.3;
+        await this.music.play();
+        this.started=true;
+      }else{
+        this.music.pause();
+      }
+    }catch(error){
+      console.error("Wedding music error:",error);
+      this.handleError();
     }
   }
 
+  handleError(){
+    this.icon(false);
+    showToast("Music could not be loaded. Check that music/1.mp3 exists.");
+  }
+
   icon(active){
-    DOM.musicBtn.textContent=active?"❚❚":"♫";
-    DOM.musicBtn.setAttribute("aria-label",active?"Pause wedding music":"Play wedding music");
-    DOM.musicBtn.classList.toggle("music-playing",active);
+    if(!this.button)return;
+
+    this.button.textContent=active?"❚❚":"♫";
+
+    this.button.setAttribute(
+      "aria-label",
+      active?"Pause wedding music":"Play wedding music"
+    );
+
+    this.button.classList.toggle("music-playing",active);
   }
 }
+
 new MusicController();
 
 /* SCROLL REVEAL */
@@ -438,97 +503,202 @@ class PremiumHover{
 }
 new PremiumHover();
 
-/* GALLERY */
+/* GALLERY + LIGHTBOX */
 class Gallery{
-  constructor(){
-    this.items=$$(".gallery-item");
-    this.box=DOM.lightbox;
-    if(!this.items.length||!this.box)return;
-    this.art=DOM.lightboxArt;
-    this.title=DOM.lightboxTitle;
-    this.classes=["art-pink","art-yellow","art-purple","art-green","art-red","art-champagne"];
-    this.bind();
-  }
-
-  bind(){
-    this.items.forEach((item,i)=>item.addEventListener("click",()=>this.open(i)));
-    $("#lightboxClose")?.addEventListener("click",()=>this.close());
-    $("#lightboxNext")?.addEventListener("click",()=>this.next());
-    $("#lightboxPrev")?.addEventListener("click",()=>this.prev());
-    this.box.addEventListener("click",e=>{if(e.target===this.box)this.close()});
-    document.addEventListener("keydown",e=>{
-      if(!this.box.classList.contains("open"))return;
-      if(e.key==="Escape")this.close();
-      if(e.key==="ArrowRight")this.next();
-      if(e.key==="ArrowLeft")this.prev();
-    });
-  }
-
-  open(i){
-    this.index=i;
-    const item=this.items[i];
-    const source=$(".gallery-art",item);
-    this.art.className=`gallery-art ${this.classes[i%this.classes.length]}`;
-    this.art.innerHTML=source?.innerHTML||"";
-    this.title.textContent=item.dataset.title||"Vijay & Rashima";
-    this.box.classList.add("open");
-    this.box.setAttribute("aria-hidden","false");
-    document.body.classList.add("locked");
-    if(!reduced)Motion.animate(this.art,[{opacity:0,transform:"scale(.94) translateY(12px)"},{opacity:1,transform:"scale(1) translateY(0)"}],{duration:500});
-  }
-
-  close(){
-    this.box.classList.remove("open");
-    this.box.setAttribute("aria-hidden","true");
-    document.body.classList.remove("locked");
-  }
-
-  next(){this.open((this.index+1)%this.items.length)}
-  prev(){this.open((this.index-1+this.items.length)%this.items.length)}
+constructor(){
+this.items=$$(".gallery-item");
+this.box=DOM.lightbox;
+this.image=$("#lightboxImage");
+this.title=DOM.lightboxTitle;
+this.loader=$("#lightboxLoader");
+this.index=0;
+if(!this.items.length||!this.box||!this.image)return;
+this.bind();
+}
+bind(){
+this.items.forEach((item,i)=>{
+item.addEventListener("click",e=>{
+e.preventDefault();
+this.open(i);
+});
+});
+$("#lightboxClose")?.addEventListener("click",()=>this.close());
+$("#lightboxNext")?.addEventListener("click",()=>this.next());
+$("#lightboxPrev")?.addEventListener("click",()=>this.prev());
+this.box.addEventListener("click",e=>{
+if(e.target===this.box)e.stopPropagation(),this.close();
+});
+document.addEventListener("keydown",e=>{
+if(!this.box.classList.contains("open"))return;
+if(e.key==="Escape")this.close();
+if(e.key==="ArrowRight")this.next();
+if(e.key==="ArrowLeft")this.prev();
+});
+this.image.addEventListener("load",()=>{
+this.image.classList.add("loaded");
+this.loader?.classList.remove("show");
+});
+this.image.addEventListener("error",()=>{
+this.loader?.classList.remove("show");
+this.image.classList.remove("loaded");
+this.image.alt="Image could not be loaded";
+});
+}
+getImage(item){
+return item.querySelector("img");
+}
+open(index){
+if(!this.items.length)return;
+this.index=index;
+const item=this.items[index];
+const source=this.getImage(item);
+const oldArt=item.querySelector(".gallery-art");
+let src="";
+let alt="";
+if(source){
+src=source.currentSrc||source.src||source.getAttribute("src")||"";
+alt=source.alt||item.dataset.title||"Gallery image";
+}else if(oldArt){
+const clone=oldArt.cloneNode(true);
+this.image.style.display="none";
+this.loader?.classList.remove("show");
+this.title.textContent=item.dataset.title||"Sumiran & Shabda";
+this.box.classList.add("open");
+this.box.setAttribute("aria-hidden","false");
+document.body.classList.add("locked");
+const fallback=this.box.querySelector(".lightbox-content");
+let oldViewer=fallback.querySelector(".lightbox-fallback-art");
+if(!oldViewer){
+oldViewer=document.createElement("div");
+oldViewer.className="lightbox-fallback-art";
+fallback.insertBefore(oldViewer,this.title);
+}
+oldViewer.innerHTML="";
+oldViewer.appendChild(clone);
+oldViewer.style.display="flex";
+return;
+}
+if(!src)return;
+const preload=new Image();
+this.loader?.classList.add("show");
+this.image.classList.remove("loaded");
+this.image.style.display="block";
+preload.onload=()=>{
+this.image.src=src;
+this.image.alt=alt;
+this.title.textContent=item.dataset.title||alt||"Sumiran & Shabda";
+this.box.classList.add("open");
+this.box.setAttribute("aria-hidden","false");
+document.body.classList.add("locked");
+if(!reduced){
+this.image.animate(
+[{opacity:0,transform:"scale(.96)"},{opacity:1,transform:"scale(1)"}],
+{duration:450,easing:"cubic-bezier(.2,.75,.2,1)",fill:"both"}
+);
+}
+};
+preload.onerror=()=>{
+this.loader?.classList.remove("show");
+showToast("This gallery image could not be loaded.");
+};
+preload.src=src;
+}
+close(){
+this.box.classList.remove("open");
+this.box.setAttribute("aria-hidden","true");
+document.body.classList.remove("locked");
+setTimeout(()=>{
+this.image.removeAttribute("src");
+this.image.classList.remove("loaded");
+},300);
+}
+next(){
+this.open((this.index+1)%this.items.length);
+}
+prev(){
+this.open((this.index-1+this.items.length)%this.items.length);
+}
 }
 new Gallery();
 
 /* RSVP */
-class RSVP{
-  constructor(){
-    this.form=$("#rsvpForm");
-    this.status=$("#formStatus");
-    if(!this.form)return;
-    this.fields=["guestName","phone","guestCount","attendance","meal"].map(id=>$("#"+id)).filter(Boolean);
-    this.form.addEventListener("submit",e=>this.submit(e));
-    this.fields.forEach(field=>field.addEventListener("input",()=>this.clear(field)));
-  }
+const rsvpForm=document.getElementById("rsvpForm");
+const rsvpSuccess=document.getElementById("rsvpSuccess");
+const rsvpCharCount=document.getElementById("rsvpCharCount");
+const rsvpMessage=document.getElementById("message");
 
-  clear(field){
-    const error=$(".error-message",field.parentElement);
-    if(field.value.trim()){
-      error&&(error.textContent="");
-      field.removeAttribute("aria-invalid");
-    }
-  }
-
-  submit(e){
-    e.preventDefault();
-    let valid=true;
-    this.fields.forEach(field=>{
-      const error=$(".error-message",field.parentElement);
-      if(!field.value.trim()){
-        valid=false;
-        error&&(error.textContent="Please complete this field.");
-        field.setAttribute("aria-invalid","true");
-      }else this.clear(field);
-    });
-    if(!valid){
-      this.status.textContent="Please complete the required details.";
-      return;
-    }
-    this.status.textContent="Thank you. Your RSVP has been beautifully received ♡";
-    this.status.classList.add("success-pop");
-    Motion.burst(innerWidth/2,innerHeight/2,35);
-    this.form.reset();
-  }
+if(rsvpMessage&&rsvpCharCount){
+rsvpMessage.addEventListener("input",()=>{rsvpCharCount.textContent=`${rsvpMessage.value.length} / 300`});
 }
-new RSVP();
+
+function setRsvpError(field,message){
+field.classList.add("invalid");
+field.classList.remove("valid");
+const error=field.querySelector(".error-message");
+if(error)error.textContent=message;
+}
+
+function setRsvpValid(field){
+field.classList.remove("invalid");
+field.classList.add("valid");
+const error=field.querySelector(".error-message");
+if(error)error.textContent="";
+}
+
+function validateRsvpField(field){
+const input=field.querySelector("input,select,textarea");
+if(!input)return true;
+const value=input.value.trim();
+if(input.required&&!value){
+setRsvpError(field,"Please fill this in.");
+return false;
+}
+if(input.type==="tel"&&value){
+const phone=value.replace(/\D/g,"");
+if(phone.length<10){
+setRsvpError(field,"Please enter a valid phone number.");
+return false;
+}
+}
+setRsvpValid(field);
+return true;
+}
+
+if(rsvpForm){
+const fields=[...rsvpForm.querySelectorAll(".rsvp-field")];
+
+fields.forEach(field=>{
+const input=field.querySelector("input,select,textarea");
+if(!input)return;
+input.addEventListener("blur",()=>validateRsvpField(field));
+input.addEventListener("input",()=>{if(field.classList.contains("invalid"))validateRsvpField(field)});
+input.addEventListener("change",()=>validateRsvpField(field));
+});
+
+rsvpForm.addEventListener("submit",event=>{
+event.preventDefault();
+let valid=true;
+fields.forEach(field=>{if(!validateRsvpField(field))valid=false});
+if(!valid){
+const firstInvalid=rsvpForm.querySelector(".invalid input,.invalid select,.invalid textarea");
+firstInvalid?.focus();
+return;
+}
+rsvpSuccess.classList.add("show");
+rsvpSuccess.setAttribute("aria-hidden","false");
+const status=document.getElementById("formStatus");
+if(status)status.textContent="RSVP completed successfully.";
+
+setTimeout(()=>{
+rsvpForm.reset();
+fields.forEach(field=>field.classList.remove("valid","invalid"));
+if(rsvpCharCount)rsvpCharCount.textContent="0 / 300";
+rsvpSuccess.classList.remove("show");
+rsvpSuccess.setAttribute("aria-hidden","true");
+if(status)status.textContent="";
+},3500);
+});
+}
 
 /* HASHTAG */
 $("#copyHashtag")?.addEventListener("click",async()=>{
@@ -542,66 +712,71 @@ $("#copyHashtag")?.addEventListener("click",async()=>{
   }
 });
 
-/* GUESTBOOK */
-class Guestbook{
-  constructor(){
-    this.form=$("#guestbookForm");
-    this.notes=$("#guestbookNotes");
-    this.key="vijay-rashima-guestbook";
-    if(!this.form||!this.notes)return;
-    this.form.addEventListener("submit",e=>this.add(e));
-    this.render();
-  }
+const guestbookForm=document.getElementById("guestbookForm");
+const guestbookName=document.getElementById("guestbookName");
+const guestbookMessage=document.getElementById("guestbookMessage");
+const guestbookList=document.getElementById("guestbookList");
+const guestbookEmpty=document.getElementById("guestbookEmpty");
+const guestbookCounter=document.getElementById("guestbookCounter");
+const guestbookSuccess=document.getElementById("guestbookSuccess");
+const GUESTBOOK_KEY="sumiran-shabda-guestbook";
 
-  get(){
-    try{return JSON.parse(localStorage.getItem(this.key))||[]}
-    catch{return[]}
-  }
-
-  save(data){
-    try{localStorage.setItem(this.key,JSON.stringify(data))}
-    catch{showToast("Guestbook storage is unavailable.")}
-  }
-
-  add(e){
-    e.preventDefault();
-    const name=$("#guestbookName")?.value.trim();
-    const message=$("#guestbookMessage")?.value.trim();
-    if(!name||!message){
-      showToast("Please add your name and message.");
-      return;
-    }
-    const data=this.get();
-    data.unshift({name,message,createdAt:Date.now()});
-    this.save(data);
-    this.form.reset();
-    this.render();
-    showToast("Your note has been added ♡");
-    Motion.burst(innerWidth/2,innerHeight/2,15);
-  }
-
-  render(){
-    const data=this.get();
-    this.notes.innerHTML="";
-    if(!data.length){
-      this.notes.innerHTML=`<div class="guest-note"><strong>♡</strong><p>Your beautiful message could be the first note here.</p></div>`;
-      return;
-    }
-    const frag=document.createDocumentFragment();
-    data.forEach(entry=>{
-      const article=document.createElement("article");
-      article.className="guest-note";
-      const name=document.createElement("strong");
-      const text=document.createElement("p");
-      name.textContent=entry.name;
-      text.textContent=entry.message;
-      article.append(name,text);
-      frag.appendChild(article);
-    });
-    this.notes.appendChild(frag);
-  }
+function getGuestbookEntries(){
+try{return JSON.parse(localStorage.getItem(GUESTBOOK_KEY)||"[]")}catch{return[]}
 }
-new Guestbook();
+
+function saveGuestbookEntries(entries){
+localStorage.setItem(GUESTBOOK_KEY,JSON.stringify(entries));
+}
+
+function renderGuestbook(){
+if(!guestbookList)return;
+const entries=getGuestbookEntries();
+guestbookList.innerHTML="";
+guestbookEmpty.style.display=entries.length?"none":"block";
+entries.slice().reverse().forEach((entry,index)=>{
+const article=document.createElement("article");
+article.className="guestbook-entry";
+article.style.animationDelay=`${index*.06}s`;
+const name=document.createElement("strong");
+name.textContent=entry.name;
+const message=document.createElement("p");
+message.textContent=entry.message;
+article.append(name,message);
+guestbookList.appendChild(article);
+});
+}
+
+if(guestbookMessage&&guestbookCounter){
+guestbookMessage.addEventListener("input",()=>{
+guestbookCounter.textContent=`${guestbookMessage.value.length} / 300`;
+});
+}
+
+if(guestbookForm){
+guestbookForm.addEventListener("submit",event=>{
+event.preventDefault();
+const name=guestbookName.value.trim();
+const message=guestbookMessage.value.trim();
+if(!name||!message)return;
+const entries=getGuestbookEntries();
+entries.push({name,message,createdAt:Date.now()});
+saveGuestbookEntries(entries);
+renderGuestbook();
+guestbookForm.reset();
+if(guestbookCounter)guestbookCounter.textContent="0 / 300";
+if(guestbookSuccess){
+guestbookSuccess.classList.add("show");
+guestbookSuccess.setAttribute("aria-hidden","false");
+setTimeout(()=>{
+guestbookSuccess.classList.remove("show");
+guestbookSuccess.setAttribute("aria-hidden","true");
+},2300);
+}
+});
+}
+
+renderGuestbook();
 
 /* TOAST */
 let toastTimer;
