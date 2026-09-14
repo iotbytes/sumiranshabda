@@ -59,7 +59,7 @@ transition:transform 1.2s cubic-bezier(.2,.8,.2,1),opacity .9s ease
 .gold-divider span{width:70px;height:1px;background:linear-gradient(90deg,transparent,var(--champagne))}
 .gold-divider span:last-child{transform:rotate(180deg)}
 .invitation-copy{color:var(--muted);font-family:var(--serif);font-size:1.25rem;line-height:1.5}
-.invitation-date{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:12px;margin:30px 0;color:var(--gold);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase}
+.invitation-date{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:12px;margin:30px 0;color:var(--gold);font-size:1rem;letter-spacing:.12em;text-transform:uppercase}
 .invitation-date strong{font-weight:600}
 .open-button{display:inline-flex;align-items:center;gap:12px;padding:13px 20px 13px 13px;border:1px solid rgba(167,125,63,.55);border-radius:999px;color:var(--brown);background:rgba(255,255,255,.65);box-shadow:0 12px 30px rgba(74,41,77,.1);transition:var(--transition)}
 .open-button:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 18px 40px rgba(74,41,77,.17)}
@@ -148,10 +148,10 @@ linear-gradient(135deg,#f4d7db,#e8dff0 55%,#f5d9ca)
 .hero-content h2 span{display:block;color:var(--rose);font-size:.55em;margin:15px}
 .hero-content p{max-width:520px;margin:30px auto;color:var(--muted);line-height:1.8}
 .hero-date{display:inline-flex;align-items:center;gap:14px;margin:10px auto 28px;color:var(--gold)}
-.hero-date>span:first-child{font-family:var(--serif);font-size:3rem;line-height:1}
+.hero-date>span:first-child{font-family:var(--serif);font-size:7rem;line-height:1}
 .hero-date div{display:flex;flex-direction:column;text-align:left}
-.hero-date small{font-size:.65rem;letter-spacing:.2em}
-.hero-date strong{font-family:var(--serif);font-size:1.4rem;font-weight:500}
+.hero-date small{font-size:2rem;letter-spacing:.2em}
+.hero-date strong{font-family:var(--serif);font-size:2rem;font-weight:500}
 .hero-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:12px}
 .btn{display:inline-flex;justify-content:center;align-items:center;min-height:48px;padding:0 24px;border-radius:999px;border:1px solid transparent;font-size:.74rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;transition:var(--transition)}
 .btn-primary{color:white;background:linear-gradient(135deg,var(--rose),var(--deep-rose));box-shadow:0 12px 28px rgba(158,49,85,.25)}
